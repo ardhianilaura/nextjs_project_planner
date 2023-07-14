@@ -1,10 +1,12 @@
 import Navbar from "./NavBar";
+import AddTask from "./addtask";
 
 export default function Layout({ children }) {
   return (
-    <div>
-      <Navbar />
-      <main>{children}</main>
-    </div>
+      <main>
+        <Navbar />
+        <AddTask />
+        {children}
+      </main>
   )
 }
