@@ -1,4 +1,4 @@
-import Navbar from "./NavBar";
+import Navbar from "./navbar";
 import AddTask from "./addtask";
 
 export default function Layout({ children }) {
