@@ -7,20 +7,29 @@ import Modal from '../components/modal';
 function DataComponent() {
   const [tasks, setData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const openModalEdit = async(id)=>{ setModalOpen(true)
-    const resp = await axios.get(`http://50.50.50.5:8000/api/tasks/${id}`)    
-    setCurrentDetail(resp.data.data)
-  }
+  const [currentDetail, setCurrentDetail] = useState()
+
   //state
   // const [image, setImage] = useState("");
   // const [task, setTask] = useState(post.task);
   // const [description, setDescription] = useState(post.description);
-  const [currentDetail, setCurrentDetail] = useState()
 
   //state validation
   const [validation, setValidation] = useState({});
+  const openModalEdit = async(id)=>{ 
+    setModalOpen(true) 
+    const findTask = tasks.find(item => item.id === id)   
+    setCurrentDetail(findTask)
+  }
+  const fetchData = async () => {
+      try {
+        const response = await axios.get('http://50.50.50.5:8000/api/tasks'); // Ganti URL sesuai dengan endpoint API Laravel Anda
+        setData(response.data.data)
+      } catch (error) {
+        console.error(error);
+      }
+  };
 
-  //function "handleFileChange"
   const handleFileChange = (e) => {
 
       //define variable for get value image data
@@ -57,7 +66,7 @@ function DataComponent() {
       .then(() => {
 
           //redirect
-          router.refresh();
+          fetchData()
 
       })
       .catch((error) => {
@@ -69,15 +78,6 @@ function DataComponent() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://50.50.50.5:8000/api/tasks'); // Ganti URL sesuai dengan endpoint API Laravel Anda
-        setData(response.data.data)
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -124,27 +124,16 @@ function DataComponent() {
                               <form onSubmit={ updateTask } action="" className="form my-6">
                                 <div className="mb-4">
                                   <label for="task" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Task</label>
-                                  <input type="text" value={task} onChange={(e) => setTask(e.target.value)} placeholder="Masukkan Task" class="bg-gray-50 border form-control border-gray-300 text-slate-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required  />
+                                  <input type="text" value={currentDetail?.task} onChange={(e) => setCurrentDetail(prev => ({...prev, task: e.target.value}))} placeholder="Masukkan Task" class="bg-gray-50 border form-control border-gray-300 text-slate-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required  />
                                 </div>
-                                {
-                                  validation.task &&
-                                  <div className="alert alert-danger">
-                                    {validation.task}
-                                  </div>
-                                }
-                                <div class="mb-4">
-                                  <label for="description" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Description</label>
-                                  <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Masukkan Description" class="bg-gray-50 border form-control border-gray-300 text-slate-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                </div>
-                                {
-                                  validation.description &&
-                                  <div className="alert alert-danger">
-                                    {validation.description}
-                                  </div>
-                                }
                                 <div className="mb-4">
-                                <label for="description" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Image</label>
-                                  <input type="file" className="form-control" onChange={handleFileChange}/>
+                                  <label for="desc" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Task</label>
+                                  <input type="text" value={currentDetail?.description} onChange={(e) => setCurrentDetail(prev => ({...prev, description: e.target.value}))} placeholder="Masukkan Task" class="bg-gray-50 border form-control border-gray-300 text-slate-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required  />
+                                </div>
+                              
+                                <div className="mb-4">
+                                <label for="image" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Image</label>
+                                  <input type="file" className="form-control" value={currentDetail?.image} onChange={(e) => setCurrentDetail(prev => ({...prev, image: e.target.files[0]}))}/>
                                 </div>
                                 {/* {
                                   validation.image &&
