@@ -16,10 +16,11 @@ function DataComponent() {
 
   //state validation
   const [validation, setValidation] = useState({});
-  const openModalEdit = async(id)=>{ 
+  const openModalEdit = (id)=>{ 
     setModalOpen(true) 
     const findTask = tasks.find(item => item.id === id)   
-    setCurrentDetail(findTask)
+    console.log(findTask, "data deatil");
+    //setCurrentDetail(findTask)
   }
   const fetchData = async () => {
       try {
