@@ -68,8 +68,7 @@ const AddTask = () => {
       >
         Add a New Task
       </button>
-      <Modal isOpen={modalOpen} setModalOpen={setModalOpen} >
-      
+      <Modal isOpen={modalOpen} setModalOpen={setModalOpen} > 
         <div class="bg-white px-4 pb-4 pt-4 sm:p-6 sm:pb-4">
         <button onClick={() => setModalOpen(false)}  className="btn btn-sm btn-circle btn-ghost absolute right-4 top-2">✕</button>
           <form onSubmit={ storeTask } action="" className="form my-6">

@@ -2,10 +2,71 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/layout';
 import { FiEdit, FiTrash2, FiCircle } from 'react-icons/fi';
+import Modal from '../components/modal';
 
-
-const DataComponent = () => {
+function DataComponent() {
   const [tasks, setData] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const openModalEdit = async(id)=>{ setModalOpen(true)
+    const resp = await axios.get(`http://50.50.50.5:8000/api/tasks/${id}`)    
+    setCurrentDetail(resp.data.data)
+  }
+  //state
+  // const [image, setImage] = useState("");
+  // const [task, setTask] = useState(post.task);
+  // const [description, setDescription] = useState(post.description);
+  const [currentDetail, setCurrentDetail] = useState()
+
+  //state validation
+  const [validation, setValidation] = useState({});
+
+  //function "handleFileChange"
+  const handleFileChange = (e) => {
+
+      //define variable for get value image data
+      const imageData = e.target.files[0]
+
+      //check validation file
+      if (!imageData.type.match('image.*')) {
+
+          //set state "image" to null
+          setImage('');
+
+          return
+      }
+
+      //assign file to state "image"
+      setImage(imageData);
+  }
+
+  //method "updateTask"
+  const updateTask = async (e) => {
+      e.preventDefault();
+
+      //define formData
+      const formData = new FormData();
+
+      //append data to "formData"
+      formData.append('image', image);
+      formData.append('task', task);
+      formData.append('description', description);
+      formData.append('_method', 'PUT');
+      
+      //send data to server
+      await axios.post(`http://50.50.50.5:8000/api/tasks/${id}`, formData)
+      .then(() => {
+
+          //redirect
+          router.refresh();
+
+      })
+      .catch((error) => {
+
+          //assign validation on state
+          setValidation(error.response.data);
+      })
+      
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,8 +82,8 @@ const DataComponent = () => {
   }, []);
 
   return (
-    <Layout>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-4/6 mx-auto mt-8">
+    <Layout htmlFor>
+      <div for="tabel-data" className="relative overflow-x-auto shadow-md sm:rounded-lg w-4/6 mx-auto mt-8">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-center text-xs text-gray-700 uppercase bg-slate-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
@@ -55,7 +116,47 @@ const DataComponent = () => {
                     <td className="px-12 py-4">
                       <div className='w-full h-full flex justify-between gap-2'>
                         <FiCircle cursor="pointer" className="text-gray-500" size={22} />
-                        <FiEdit cursor="pointer" className="text-blue-500" size={20} />
+
+                        <FiEdit onClick={ () => openModalEdit(item.id) }  cursor="pointer" className="text-blue-500" size={20} />
+                          <Modal isOpen={modalOpen} setModalOpen={setModalOpen}>
+                            <div class="bg-white px-4 pb-4 pt-4 sm:p-6 sm:pb-4">
+                            <button onClick={() => setModalOpen(false)}  className="btn btn-sm btn-circle btn-ghost absolute right-4 top-2">✕</button>
+                              <form onSubmit={ updateTask } action="" className="form my-6">
+                                <div className="mb-4">
+                                  <label for="task" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Task</label>
+                                  <input type="text" value={task} onChange={(e) => setTask(e.target.value)} placeholder="Masukkan Task" class="bg-gray-50 border form-control border-gray-300 text-slate-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required  />
+                                </div>
+                                {
+                                  validation.task &&
+                                  <div className="alert alert-danger">
+                                    {validation.task}
+                                  </div>
+                                }
+                                <div class="mb-4">
+                                  <label for="description" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Description</label>
+                                  <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Masukkan Description" class="bg-gray-50 border form-control border-gray-300 text-slate-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                </div>
+                                {
+                                  validation.description &&
+                                  <div className="alert alert-danger">
+                                    {validation.description}
+                                  </div>
+                                }
+                                <div className="mb-4">
+                                <label for="description" class="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Image</label>
+                                  <input type="file" className="form-control" onChange={handleFileChange}/>
+                                </div>
+                                {/* {
+                                  validation.image &&
+                                  <div className="alert alert-danger mb-2 text-sm">
+                                    {validation.image}
+                                  </div>
+                                } */}
+                                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update</button>
+                              </form>
+                            </div>
+                          </Modal>
+
                         <FiTrash2 cursor="pointer" className="text-red-500" size={20} />
                       </div>
                     </td>
@@ -68,4 +169,4 @@ const DataComponent = () => {
   );
 };
 
-export default DataComponent;
+export default DataComponent
