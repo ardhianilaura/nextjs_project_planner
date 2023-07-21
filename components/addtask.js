@@ -13,24 +13,11 @@ const AddTask = () => {
   //state validation
   const [validation, setValidation] = useState({});
     
-  //function "handleFileChange"
-  const handleFileChange = (e) => {
-    
-    //define variable for get value image data
-    const imageData = e.target.files[0]
-
-    //check validation file
-    if (!imageData.type.match('image.*')) {
-    
-      //set state "image" to null
-      setImage('');
-    
-      return
-    }
-    
-    //assign file to state "image"
-    setImage(imageData);
-  }
+  // function "handleFileChange"
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
     
   //method "storeTask"
   const storeTask = async (e) => {
@@ -45,7 +32,7 @@ const AddTask = () => {
     formData.append('description', description);
             
     //send data to server
-    await axios.post('http://50.50.50.25:8000/api/tasks', formData)
+    await axios.post(`http://50.50.50.25:8000/api/tasks`, formData)
     .then(() => {
     
       //redirect
@@ -94,7 +81,7 @@ const AddTask = () => {
             }
             <div className="mb-4">
             <label htmlFor="description" className="block mb-2 text-sm font-medium text-slate-700 dark:text-white">Image</label>
-              <input type="file" className="form-control" onChange={handleFileChange}/>
+              <input type="file" className="form-control" onChange={handleImageChange}/>
             </div>
             {
               validation.image &&

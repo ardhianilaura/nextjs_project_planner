@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation";
 const DataComponent = ({data}) => {
   const router = useRouter();
   const [tasks, setData] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
   const [editedData, setEditedData] = useState(data);
 
   // state validation
@@ -73,6 +74,11 @@ const DataComponent = ({data}) => {
     console.log(findTask)
     setModalOpen(true) 
   }
+
+  const handleDeleteTask = async (id) => {
+    await axios.delete(`http://50.50.50.25:8000/api/tasks/${id}`);
+    router.refresh();
+  }
   
   const fetchData = async () => {
     try {
@@ -90,7 +96,7 @@ const DataComponent = ({data}) => {
 
   return (
     <Layout>
-      <div htmlFor="tabel-data" className="relative overflow-x-auto shadow-md sm:rounded-lg w-4/6 mx-auto mt-8">
+      <div htmlFor="tabel-data" className="mb-10 relative overflow-x-auto shadow-md sm:rounded-lg w-4/6 mx-auto mt-8">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-center text-xs text-gray-700 uppercase bg-slate-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -156,7 +162,21 @@ const DataComponent = ({data}) => {
                       </div>
                     </Modal>
 
-                  <FiTrash2 cursor="pointer" className="text-red-500" size={20} />
+                  <FiTrash2 onClick={() => setOpenModalDelete(true)} cursor="pointer" className="text-red-500" size={20} />
+                  <Modal isOpen={openModalDelete} setModalOpen={setOpenModalDelete}>
+                    <div className="bg-white px-4 pb-4 pt-4 sm:p-6 sm:pb-4">
+                      <button onClick={() => setOpenModalDelete(false)}  className="btn btn-sm btn-circle btn-ghost absolute right-4 top-2">✕</button>
+                      <div className='text-center w-full'>
+                        <h3 className="text-lg mt-5 text-slate-500">Are you sure, you want to delete this task?</h3>
+                        <div className="w-full m-auto mt-10">
+                          <button
+                            onClick={() => handleDeleteTask(item.id)} 
+                            className="btn text-white bg-red-500 px-10 py-2 mb-4 rounded">YES
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </Modal>
                 </div>
               </td>
             </tr>
