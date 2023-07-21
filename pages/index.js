@@ -7,7 +7,9 @@ import Modal from '../components/modal';
 function DataComponent() {
   const [tasks, setData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentDetail, setCurrentDetail] = useState()
+  const [currentDetail, setCurrentDetail] = useState({
+    
+  })
 
   //state
   // const [image, setImage] = useState("");
